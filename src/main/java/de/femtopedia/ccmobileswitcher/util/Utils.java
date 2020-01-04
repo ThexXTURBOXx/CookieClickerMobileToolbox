@@ -14,6 +14,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.compress.utils.IOUtils;
 
 public class Utils {
 
@@ -50,7 +51,9 @@ public class Utils {
         TarArchiveInputStream in = new TarArchiveInputStream(stream);
         TarArchiveEntry entry;
         while ((entry = in.getNextTarEntry()) != null) {
-            if (!entry.isDirectory()) {
+            if (entry.isDirectory()) {
+                new File(outputDir, entry.getName()).mkdirs();
+            } else {
                 extractTarFile(in, entry, outputDir);
             }
         }
@@ -87,18 +90,41 @@ public class Utils {
         out.close();
     }
 
-    public static void packTar(String out, String list) throws IOException {
+    public static void packTar(File out, File list, File dir) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(list));
         TarArchiveOutputStream writer =
                 new TarArchiveOutputStream(new FileOutputStream(out));
+        writer.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
+        writer.setAddPaxHeadersForNonAsciiNames(true);
         String line;
         while ((line = reader.readLine()) != null) {
-            File in = new File(line);
-            writer.createArchiveEntry(in, in.getPath());
+            File in = new File(dir, line);
+            File entryDir = new File(line).getParentFile();
+            addToArchiveCompression(writer, in, entryDir.toString());
         }
         reader.close();
         writer.flush();
         writer.close();
+    }
+
+    private static void addToArchiveCompression(TarArchiveOutputStream out, File file, String dir) throws IOException {
+        String entry = dir + File.separator + file.getName();
+        if (file.isFile()) {
+            out.putArchiveEntry(new TarArchiveEntry(file, entry));
+            try (FileInputStream in = new FileInputStream(file)) {
+                IOUtils.copy(in, out);
+            }
+            out.closeArchiveEntry();
+        } else if (file.isDirectory()) {
+            File[] children = file.listFiles();
+            if (children != null) {
+                for (File child : children) {
+                    addToArchiveCompression(out, child, entry);
+                }
+            }
+        } else {
+            System.out.println(file.getName() + " is not supported");
+        }
     }
 
 }

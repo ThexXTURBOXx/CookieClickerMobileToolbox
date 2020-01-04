@@ -72,7 +72,7 @@ public class MenuWindow extends JFrame {
                     File filePath = packages.getParentFile();
                     File abFile = new File(filePath, "backup.ab");
                     File tarFile = new File(filePath, "backup.tar");
-                    Utils.packTar(tarFile.toString(), packages.toString());
+                    Utils.packTar(tarFile, packages, filePath);
                     String[] switcher = new String[]{"pack", tarFile.toString(),
                             abFile.toString()};
                     org.nick.abe.Main.main(switcher);
@@ -114,9 +114,7 @@ public class MenuWindow extends JFrame {
                                 StandardCharsets.UTF_8);
                         content = content.replaceAll(
                                 "org\\.dashnet\\.cookieclicker(?:.*?)/",
-                                pkg + "/").replaceAll(
-                                "org\\.dashnet\\.cookieclicker(?:.*?)\\.",
-                                pkg + ".");
+                                pkg + "/");
                         IOUtils.write(content, new FileOutputStream(destPackage),
                                 StandardCharsets.UTF_8);
 
