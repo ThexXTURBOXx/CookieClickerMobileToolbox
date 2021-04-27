@@ -1,0 +1,1 @@
+java -jar CCMobileSwitcher-1.1.1-shaded.jar
