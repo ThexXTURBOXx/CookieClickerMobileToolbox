@@ -19,7 +19,7 @@
         <dependency>
             <groupId>com.github.nelenkov</groupId>
             <artifactId>android-backup-extractor</artifactId>
-            <version>20181012025725-d750899</version>
+            <version>20201125130526-b7fcf78</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -29,12 +29,12 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.7</version>
+            <version>2.11.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.vidstige</groupId>
             <artifactId>jadb</artifactId>
-            <version>v1.1.0</version>
+            <version>1.2.1</version>
         </dependency>
     </dependencies>
 
@@ -42,19 +42,8 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>de.femtopedia.ccmobileswitcher.Main
-                            </mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
                 <configuration>
                     <source>8</source>
                     <target>8</target>
@@ -63,6 +52,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -76,6 +66,22 @@
                     <createDependencyReducedPom>false
                     </createDependencyReducedPom>
                     <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                    <transformers>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <mainClass>de.femtopedia.ccmobileswitcher.Main</mainClass>
+                        </transformer>
+                    </transformers>
                 </configuration>
             </plugin>
         </plugins>
