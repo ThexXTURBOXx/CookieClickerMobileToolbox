@@ -20,6 +20,7 @@ public class PatchChooserWindow extends JFrame {
 
     private volatile String currentSelected = null;
 
+    @SuppressWarnings("unchecked")
     public PatchChooserWindow(Function<String, Boolean> onChoose) throws IOException,
             JadbException, InterruptedException {
         Utils.startProcess("adb start-server");
@@ -38,9 +39,7 @@ public class PatchChooserWindow extends JFrame {
         }
 
         JList<String> patches = new JList<>(packagesCC);
-        patches.addListSelectionListener(e -> {
-            currentSelected = ((JList<String>) e.getSource()).getSelectedValue();
-        });
+        patches.addListSelectionListener(e -> currentSelected = ((JList<String>) e.getSource()).getSelectedValue());
 
         JButton apply = new JButton("Choose");
         apply.addActionListener(e -> {

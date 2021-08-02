@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -113,13 +114,13 @@ public class MenuWindow extends JFrame {
                         String content = IOUtils.toString(new FileInputStream(destPackage),
                                 StandardCharsets.UTF_8);
                         content = content.replaceAll(
-                                "org\\.dashnet\\.cookieclicker(?:.*?)/",
+                                "org\\.dashnet\\.cookieclicker.*?/",
                                 pkg + "/");
                         IOUtils.write(content, new FileOutputStream(destPackage),
                                 StandardCharsets.UTF_8);
 
-                        File appFolder =
-                                new File(destination, "apps").listFiles()[0];
+                        File[] files = new File(destination, "apps").listFiles();
+                        File appFolder = Objects.requireNonNull(files)[0];
                         File newFolder = new File(appFolder.getParent(), pkg);
                         appFolder.renameTo(newFolder);
 
