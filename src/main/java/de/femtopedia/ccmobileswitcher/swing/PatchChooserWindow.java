@@ -26,7 +26,7 @@ public class PatchChooserWindow extends JFrame {
         Utils.startProcess("adb start-server");
         JadbConnection connection = new JadbConnection();
         List<JadbDevice> devices = connection.getDevices();
-        if (devices.size() < 1) {
+        if (devices.isEmpty()) {
             return;
         }
         JadbDevice device = devices.get(0);

@@ -4,17 +4,18 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.function.Consumer;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 
 public class Utils {
 
@@ -37,7 +38,7 @@ public class Utils {
     public static void printTarEntries(String input, File output) throws IOException {
         PrintWriter writer = new PrintWriter(output);
         TarArchiveInputStream tarStream = new TarArchiveInputStream(
-                new FileInputStream(input));
+                Files.newInputStream(Paths.get(input)));
         ArchiveEntry entry;
         while ((entry = tarStream.getNextEntry()) != null) {
             writer.println(entry.getName());
@@ -50,7 +51,7 @@ public class Utils {
     public static void extractTar(InputStream stream, File outputDir) throws IOException {
         TarArchiveInputStream in = new TarArchiveInputStream(stream);
         TarArchiveEntry entry;
-        while ((entry = in.getNextTarEntry()) != null) {
+        while ((entry = in.getNextEntry()) != null) {
             if (entry.isDirectory()) {
                 new File(outputDir, entry.getName()).mkdirs();
             } else {
@@ -64,7 +65,7 @@ public class Utils {
                                       File outputDir) throws IOException {
         TarArchiveInputStream in = new TarArchiveInputStream(stream);
         TarArchiveEntry entry;
-        while ((entry = in.getNextTarEntry()) != null) {
+        while ((entry = in.getNextEntry()) != null) {
             if (entry.getName().equals(exFile)) {
                 extractTarFile(in, entry, outputDir);
                 break;
@@ -80,7 +81,7 @@ public class Utils {
         outFile.getParentFile().mkdirs();
         outFile.createNewFile();
         BufferedOutputStream out =
-                new BufferedOutputStream(new FileOutputStream(outFile));
+                new BufferedOutputStream(Files.newOutputStream(outFile.toPath()));
         int len;
         while ((len = in.read(buffer)) != -1) {
             out.write(buffer, 0, len);
@@ -93,7 +94,7 @@ public class Utils {
     public static void packTar(File out, File list, File dir) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(list));
         TarArchiveOutputStream writer =
-                new TarArchiveOutputStream(new FileOutputStream(out));
+                new TarArchiveOutputStream(Files.newOutputStream(out.toPath()));
         writer.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
         writer.setAddPaxHeadersForNonAsciiNames(true);
         String line;

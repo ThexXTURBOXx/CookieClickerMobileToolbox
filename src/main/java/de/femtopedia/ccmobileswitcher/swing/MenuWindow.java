@@ -4,10 +4,9 @@ import de.femtopedia.ccmobileswitcher.util.Utils;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Objects;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -41,7 +40,7 @@ public class MenuWindow extends JFrame {
                             String[] switcher = new String[]{"unpack", abFile.toString(),
                                     tarFile.toString()};
                             org.nick.abe.Main.main(switcher);
-                            Utils.extractTar(new FileInputStream(tarFile), filePath);
+                            Utils.extractTar(Files.newInputStream(tarFile.toPath()), filePath);
 
                             File packages = new File(filePath, "package.list");
                             Utils.printTarEntries(tarFile.toString(), packages);
@@ -111,12 +110,12 @@ public class MenuWindow extends JFrame {
                 File destPackage = new File(destination, "package.list");
                 new PatchChooserWindow(pkg -> {
                     try {
-                        String content = IOUtils.toString(new FileInputStream(destPackage),
+                        String content = IOUtils.toString(Files.newInputStream(destPackage.toPath()),
                                 StandardCharsets.UTF_8);
                         content = content.replaceAll(
                                 "org\\.dashnet\\.cookieclicker.*?/",
                                 pkg + "/");
-                        IOUtils.write(content, new FileOutputStream(destPackage),
+                        IOUtils.write(content, Files.newOutputStream(destPackage.toPath()),
                                 StandardCharsets.UTF_8);
 
                         File[] files = new File(destination, "apps").listFiles();
@@ -132,7 +131,7 @@ public class MenuWindow extends JFrame {
                         String[] switcher = new String[]{"unpack", abFile.toString(),
                                 tarFile.toString()};
                         org.nick.abe.Main.main(switcher);
-                        Utils.extractTarFile(new FileInputStream(tarFile),
+                        Utils.extractTarFile(Files.newInputStream(tarFile.toPath()),
                                 "apps/" + pkg + "/_manifest", destination);
                         FileUtils.deleteDirectory(tempPath);
                         System.exit(0);
